@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Market 好玩超市</title>
+<style>
+:root {
+  --ink:#26324a;
+  --yellow:#ffd84d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  color:var(--ink);
+  font-family:"Trebuchet MS","Noto Sans TC",Arial,sans-serif;
+  background:linear-gradient(135deg,#fff4bd,#dff8ff 48%,#ffe4ef);
+}
+header {
+  padding:18px 14px 14px;
+  text-align:center;
+  background:#ffffffd9;
+  border-bottom:4px solid var(--ink);
+}
+h1 { margin:0 0 5px; font-size:clamp(1.8rem,4vw,2.8rem); }
+h2 { margin:0 0 12px; font-size:1.45rem; }
+.subtitle { font-size:1rem; font-weight:700; }
+.topbar {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:14px;
+}
+.money {
+  background:var(--yellow);
+  border:3px solid var(--ink);
+  border-radius:18px;
+  padding:12px 18px;
+  font-size:clamp(1.05rem,2.5vw,1.35rem);
+  font-weight:900;
+  box-shadow:4px 4px 0 var(--ink);
+}
+button {
+  cursor:pointer;
+  font:inherit;
+  font-weight:900;
+  border:3px solid var(--ink);
+  border-radius:15px;
+  padding:11px 15px;
+  color:var(--ink);
+  background:white;
+  box-shadow:3px 3px 0 var(--ink);
+}
+button:hover { transform:translateY(-2px); }
+.music-btn { background:#d8cbff; }
+main {
+  max-width:1300px;
+  margin:auto;
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);
+  gap:18px;
+  align-items:start;
+}
+.panel {
+  background:#ffffffed;
+  border:3px solid var(--ink);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:6px 6px 0 #26324a24;
+}
+.tabs {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:15px;
+}
+.tab {
+  padding:12px 5px;
+  min-height:76px;
+  font-size:.94rem;
+  box-shadow:2px 2px 0 var(--ink);
+}
+.tab span {
+  display:block;
+  font-size:1.7rem;
+  margin-bottom:3px;
+}
+.tab[aria-selected="true"] {
+  background:var(--yellow);
+  outline:4px solid white;
+}
+.tab[data-cat="grains"] { background:#ffe5a8; }
+.tab[data-cat="fruits"] { background:#ffd6e1; }
+.tab[data-cat="vegetables"] { background:#d6f7cb; }
+.tab[data-cat="protein"] { background:#d8edff; }
+.tab[data-cat="dairy"] { background:#f4f1ea; }
+.tab[data-cat="nuts"] { background:#f1e3c8; }
+.tab[data-cat="treats"] { background:#e8dcff; }
+.section-note {
+  margin:0 0 12px;
+  font-weight:700;
+  color:#4e5a71;
+}
+.products {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.product {
+  border:2px solid #d7dce7;
+  border-radius:18px;
+  padding:12px 8px;
+  text-align:center;
+  background:white;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+}
+.food {
+  font-size:clamp(2.7rem,6vw,4rem);
+  line-height:1.15;
+}
+.product h3 {
+  margin:0;
+  font-size:1.03rem;
+  line-height:1.35;
+}
+.price {
+  color:#176e49;
+  font-size:1.1rem;
+  font-weight:1000;
+}
+.add {
+  width:100%;
+  padding:9px 5px;
+  background:#b9f0cd;
+  font-size:.9rem;
+}
+.cart-head {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+}
+.cart-count {
+  background:#ffdf73;
+  border:2px solid var(--ink);
+  padding:5px 10px;
+  border-radius:999px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.cart-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:440px;
+  overflow:auto;
+  padding-right:3px;
+}
+.cart-group {
+  border:2px dashed #d3d8e4;
+  border-radius:14px;
+  padding:10px;
+}
+.cart-group h3 { margin:0 0 7px; font-size:1rem; }
+.cart-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:7px;
+  padding:6px 0;
+  border-top:1px solid #edf0f5;
+  font-size:.92rem;
+}
+.cart-item:first-of-type { border-top:0; }
+.remove {
+  border:0;
+  box-shadow:none;
+  background:#ffe0e5;
+  padding:3px 8px;
+  font-size:.8rem;
+}
+.empty {
+  text-align:center;
+  padding:25px 8px;
+  color:#68738a;
+  font-weight:700;
+}
+.total {
+  border-top:3px solid var(--ink);
+  margin-top:12px;
+  padding-top:12px;
+  display:flex;
+  justify-content:space-between;
+  font-size:1.2rem;
+  font-weight:1000;
+}
+.cart-actions {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:13px;
+}
+.checkout { background:#ffb3c7; }
+.reset { background:#e8ecf4; }
+.message {
+  margin-top:13px;
+  border-radius:15px;
+  background:#fff7ce;
+  border:2px solid #f2d66e;
+  padding:12px;
+  font-weight:800;
+  line-height:1.5;
+}
+.message:empty { display:none; }
+.checklist {
+  margin:10px 0;
+  padding:0;
+  list-style:none;
+}
+.checklist li { padding:5px 0; }
+.tip {
+  font-size:.92rem;
+  line-height:1.55;
+  margin:12px 0 0;
+  color:#4e5a71;
+}
+footer {
+  text-align:center;
+  padding:0 15px 24px;
+  color:#4e5a71;
+  font-weight:700;
+}
+@media (max-width:850px) {
+  main { grid-template-columns:1fr; }
+  .cart-list { max-height:330px; }
+}
+@media (max-width:560px) {
+  main { padding:10px; }
+  .panel { padding:12px; }
+  .tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tab:last-child { grid-column:span 2; }
+  .products { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛒 Happy Market 好玩超市</h1>
+  <div class="subtitle">Buy food. Learn English! 買食物，學英文！</div>
+
+  <div class="topbar">
+    <div class="money" id="moneyDisplay">
+      Money Left: NT$500（剩餘金額：NT$500）
+    </div>
+    <button class="music-btn" id="musicButton" type="button">
+      🎵 Play Music（播放音樂）
+    </button>
+  </div>
+
+  <p class="subtitle" style="margin:12px 0 0">
+    Choose food for a healthy meal! 選擇食物，吃得健康！
+  </p>
+</header>
+
+<main>
+<section class="panel" aria-labelledby="marketTitle">
+  <h2 id="marketTitle">🏪 Food Shop 食物商店</h2>
+
+  <div class="tabs" role="tablist" aria-label="Food categories 食物類別">
+    <button class="tab" role="tab" aria-selected="true" data-cat="grains">
+      <span>🍚</span>Grains<br>全穀雜糧類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="fruits">
+      <span>🍎</span>Fruits<br>水果類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="vegetables">
+      <span>🥦</span>Vegetables<br>蔬菜類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="protein">
+      <span>🥚</span>Protein<br>豆魚蛋肉類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="dairy">
+      <span>🥛</span>Dairy<br>乳品類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="nuts">
+      <span>🥜</span>Oils, Nuts & Seeds<br>油脂與堅果種子類
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-cat="treats">
+      <span>🍬</span>Treats & Snacks<br>零食（少吃）
+    </button>
+  </div>
+
+  <p class="section-note" id="categoryNote">Pick food. 點選食物。</p>
+  <p class="section-note" id="choiceCount" style="font-size:.9rem;color:#68738a">
+    10 choices（10 種選擇）
+  </p>
+  <div class="products" id="products" aria-live="polite"></div>
+</section>
+
+<aside class="panel" aria-labelledby="cartTitle">
+  <div class="cart-head">
+    <h2 id="cartTitle">🧺 Shopping Cart 購物車</h2>
+    <span class="cart-count" id="cartCount">0 items（0 件）</span>
+  </div>
+
+  <div class="cart-list" id="cartList">
+    <div class="empty">Your cart is empty.<br>購物車是空的！</div>
+  </div>
+
+  <div class="total">
+    <span>Total 總額</span>
+    <span id="totalDisplay">NT$0</span>
+  </div>
+
+  <div class="cart-actions">
+    <button class="checkout" id="checkoutButton" type="button">
+      ✅ Checkout 結帳
+    </button>
+    <button class="reset" id="resetButton" type="button">
+      🔄 Start Again 重新開始
+    </button>
+  </div>
+
+  <div class="message" id="feedback" role="status" aria-live="polite"></div>
+
+  <p class="tip">
+    Healthy food helps us grow!<br>
+    健康的食物幫助我們長大！<br><br>
+    Try to buy 1 food from each of the 6 food groups.
+    六大類食物，每類買一樣。
+  </p>
+</aside>
+</main>
+
+<footer>
+  Have fun and make a healthy basket! 玩得開心，也要選健康的食物！
+</footer>
+
+<script>
+(() => {
+  const START_MONEY = 500;
+
+  const categories = {
+    grains: {
+      label:"Grains（全穀雜糧類）",
+      emoji:"🍚",
+      note:"Grains give us energy. 全穀雜糧幫助我們有精神。",
+      items:[
+        {id:"rice",en:"Rice",zh:"米飯",emoji:"🍚",price:40},
+        {id:"bread",en:"Bread",zh:"麵包",emoji:"🍞",price:50},
+        {id:"noodles",en:"Noodles",zh:"麵條",emoji:"🍜",price:60},
+        {id:"oats",en:"Oats",zh:"燕麥",emoji:"🥣",price:45},
+        {id:"cornbread",en:"Corn Bread",zh:"玉米麵包",emoji:"🌽",price:55},
+        {id:"sweetpotato",en:"Sweet Potato",zh:"地瓜",emoji:"🍠",price:40},
+        {id:"potato",en:"Potato",zh:"馬鈴薯",emoji:"🥔",price:45},
+        {id:"riceball",en:"Rice Ball",zh:"飯糰",emoji:"🍙",price:50},
+        {id:"pasta",en:"Pasta",zh:"義大利麵",emoji:"🍝",price:60},
+        {id:"crackers",en:"Whole-Grain Crackers",zh:"全穀餅乾",emoji:"🥨",price:50}
+      ]
+    },
+
+    fruits: {
+      label:"Fruits（水果類）",
+      emoji:"🍎",
+      note:"Fruit is good for us. 水果對我們很好。",
+      items:[
+        {id:"apple",en:"Apple",zh:"蘋果",emoji:"🍎",price:30},
+        {id:"banana",en:"Banana",zh:"香蕉",emoji:"🍌",price:40},
+        {id:"orange",en:"Orange",zh:"橘子",emoji:"🍊",price:50},
+        {id:"guava",en:"Guava",zh:"芭樂",emoji:"🍐",price:35},
+        {id:"watermelon",en:"Watermelon",zh:"西瓜",emoji:"🍉",price:45},
+        {id:"grapes",en:"Grapes",zh:"葡萄",emoji:"🍇",price:50},
+        {id:"pineapple",en:"Pineapple",zh:"鳳梨",emoji:"🍍",price:40},
+        {id:"papaya",en:"Papaya",zh:"木瓜",emoji:"🥭",price:45},
+        {id:"strawberry",en:"Strawberry",zh:"草莓",emoji:"🍓",price:50},
+        {id:"pear",en:"Pear",zh:"梨子",emoji:"🍐",price:35}
+      ]
+    },
+
+    vegetables: {
+      label:"Vegetables（蔬菜類）",
+      emoji:"🥦",
+      note:"Eat vegetables every day. 每天都要吃蔬菜。",
+      items:[
+        {id:"carrot",en:"Carrot",zh:"胡蘿蔔",emoji:"🥕",price:30},
+        {id:"broccoli",en:"Broccoli",zh:"花椰菜",emoji:"🥦",price:40},
+        {id:"corn",en:"Corn",zh:"玉米",emoji:"🌽",price:50},
+        {id:"cabbage",en:"Cabbage",zh:"高麗菜",emoji:"🥬",price:35},
+        {id:"spinach",en:"Spinach",zh:"菠菜",emoji:"🥬",price:40},
+        {id:"tomato",en:"Tomato",zh:"番茄",emoji:"🍅",price:30},
+        {id:"cucumber",en:"Cucumber",zh:"小黃瓜",emoji:"🥒",price:35},
+        {id:"mushroom",en:"Mushroom",zh:"香菇",emoji:"🍄",price:45},
+        {id:"pumpkin",en:"Pumpkin",zh:"南瓜",emoji:"🎃",price:40},
+        {id:"bellpepper",en:"Bell Pepper",zh:"甜椒",emoji:"🫑",price:45}
+      ]
+    },
+
+    protein: {
+      label:"Protein（豆魚蛋肉類）",
+      emoji:"🥚",
+      note:"Protein helps us grow. 蛋白質幫助我們長大。",
+      items:[
+        {id:"chicken",en:"Chicken",zh:"雞肉",emoji:"🍗",price:70},
+        {id:"fish",en:"Fish",zh:"魚",emoji:"🐟",price:80},
+        {id:"eggs",en:"Eggs",zh:"雞蛋",emoji:"🥚",price:100},
+        {id:"tofu",en:"Tofu",zh:"豆腐",emoji:"🧈",price:70},
+        {id:"pork",en:"Pork",zh:"豬肉",emoji:"🥩",price:90},
+        {id:"beef",en:"Beef",zh:"牛肉",emoji:"🥩",price:100},
+        {id:"shrimp",en:"Shrimp",zh:"蝦子",emoji:"🦐",price:90},
+        {id:"beans",en:"Beans",zh:"豆子",emoji:"🫘",price:70},
+        {id:"edamame",en:"Edamame",zh:"毛豆",emoji:"🫛",price:75}
+      ]
+    },
+
+    dairy: {
+      label:"Dairy（乳品類）",
+      emoji:"🥛",
+      note:"Milk makes our bones strong. 喝牛奶，骨頭強壯。",
+      items:[
+        {id:"milk",en:"Milk",zh:"牛奶",emoji:"🥛",price:50},
+        {id:"lowfat-milk",en:"Low-Fat Milk",zh:"低脂牛奶",emoji:"🥛",price:50},
+        {id:"yogurt",en:"Yogurt",zh:"優格",emoji:"🥣",price:45},
+        {id:"yogurt-drink",en:"Yogurt Drink",zh:"優酪乳",emoji:"🍶",price:55},
+        {id:"cheese",en:"Cheese",zh:"起司",emoji:"🧀",price:60},
+        {id:"cheese-stick",en:"Cheese Stick",zh:"起司條",emoji:"🧀",price:55},
+        {id:"milk-powder",en:"Milk Powder",zh:"奶粉",emoji:"🥫",price:80},
+        {id:"goat-milk",en:"Goat Milk",zh:"羊奶",emoji:"🐐",price:70}
+      ]
+    },
+
+    nuts: {
+      label:"Oils, Nuts & Seeds（油脂與堅果種子類）",
+      emoji:"🥜",
+      note:"Eat a little every day. 每天吃一點點就好。",
+      items:[
+        {id:"peanuts",en:"Peanuts",zh:"花生",emoji:"🥜",price:40},
+        {id:"almonds",en:"Almonds",zh:"杏仁果",emoji:"🌰",price:60},
+        {id:"cashews",en:"Cashews",zh:"腰果",emoji:"🥜",price:65},
+        {id:"walnuts",en:"Walnuts",zh:"核桃",emoji:"🌰",price:70},
+        {id:"sunflower",en:"Sunflower Seeds",zh:"葵瓜子",emoji:"🌻",price:35},
+        {id:"pumpkin-seeds",en:"Pumpkin Seeds",zh:"南瓜子",emoji:"🎃",price:40},
+        {id:"sesame",en:"Black Sesame",zh:"黑芝麻",emoji:"🫙",price:40},
+        {id:"olive-oil",en:"Olive Oil",zh:"橄欖油",emoji:"🫒",price:80},
+        {id:"cooking-oil",en:"Cooking Oil",zh:"食用油",emoji:"🛢️",price:70}
+      ]
+    },
+
+    treats: {
+      label:"Treats & Snacks（零食，少吃）",
+      emoji:"🍬",
+      note:"Treats are fun. Eat them sometimes. 零食可以偶爾吃，不要吃太多。",
+      items:[
+        {id:"soda",en:"Soda",zh:"汽水",emoji:"🥤",price:80},
+        {id:"candy",en:"Candy",zh:"糖果",emoji:"🍬",price:100},
+        {id:"chips",en:"Chips",zh:"洋芋片",emoji:"🍟",price:120},
+        {id:"chocolate",en:"Chocolate",zh:"巧克力",emoji:"🍫",price:100},
+        {id:"cookie",en:"Cookie",zh:"餅乾",emoji:"🍪",price:90},
+        {id:"cake",en:"Cake",zh:"蛋糕",emoji:"🍰",price:120},
+        {id:"donut",en:"Donut",zh:"甜甜圈",emoji:"🍩",price:110},
+        {id:"icecream",en:"Ice Cream",zh:"冰淇淋",emoji:"🍦",price:100},
+        {id:"gummy",en:"Gummy Candy",zh:"軟糖",emoji:"🧸",price:90},
+        {id:"milk-tea",en:"Sweet Milk Tea",zh:"甜奶茶",emoji:"🧋",price:120}
+      ]
+    }
+  };
+
+  let moneyLeft = START_MONEY;
+  let cart = [];
+  let activeCategory = "grains";
+  let musicOn = false;
+  let audioContext = null;
+  let musicTimer = null;
+  let noteIndex = 0;
+
+  const moneyDisplay = document.getElementById("moneyDisplay");
+  const productsEl = document.getElementById("products");
+  const categoryNote = document.getElementById("categoryNote");
+  const choiceCount = document.getElementById("choiceCount");
+  const cartList = document.getElementById("cartList");
+  const cartCount = document.getElementById("cartCount");
+  const totalDisplay = document.getElementById("totalDisplay");
+  const feedback = document.getElementById("feedback");
+  const musicButton = document.getElementById("musicButton");
+
+  function money(n) {
+    return "NT$" + n;
+  }
+
+  function allItems() {
+    return Object.values(categories).flatMap(c => c.items);
+  }
+
+  function getItem(id) {
+    return allItems().find(item => item.id === id);
+  }
+
+  function totalCost() {
+    return cart.reduce((sum, entry) => sum + getItem(entry.id).price, 0);
+  }
+
+  function renderProducts() {
+    const category = categories[activeCategory];
+    categoryNote.textContent = category.note;
+    choiceCount.textContent =
+      `${category.items.length} choices（${category.items.length} 種選擇）`;
+
+    productsEl.innerHTML = "";
+
+    category.items.forEach(item => {
+      const card = document.createElement("article");
+      card.className = "product";
+
+      card.innerHTML = `
+        <div class="food" aria-hidden="true">${item.emoji}</div>
+        <h3>${item.en}<br>（${item.zh}）</h3>
+        <div class="price">${money(item.price)}</div>
+        <button class="add" type="button"
+          aria-label="Add ${item.en} to cart">
+          ＋ Add to Cart<br>加入購物車
+        </button>
+      `;
+
+      card.querySelector("button").addEventListener("click", () => {
+        addToCart(item.id);
+      });
+
+      productsEl.appendChild(card);
+    });
+  }
+
+  function addToCart(id) {
+    const item = getItem(id);
+
+    if (item.price > moneyLeft) {
+      alert("No more money!（錢不夠了！）");
+      feedback.textContent = "No more money!（錢不夠了！）";
+      return;
+    }
+
+    cart.push({id, key:Date.now() + Math.random()});
+    moneyLeft -= item.price;
+    feedback.textContent = "";
+
+    renderCart();
+    renderMoney();
+  }
+
+  function removeFromCart(key) {
+    const index = cart.findIndex(entry => entry.key === key);
+    if (index < 0) return;
+
+    moneyLeft += getItem(cart[index].id).price;
+    cart.splice(index, 1);
+
+    renderCart();
+    renderMoney();
+  }
+
+  function renderMoney() {
+    moneyDisplay.textContent =
+      `Money Left: ${money(moneyLeft)}（剩餘金額：${money(moneyLeft)}）`;
+  }
+
+  function renderCart() {
+    cartList.innerHTML = "";
+
+    if (cart.length === 0) {
+      cartList.innerHTML =
+        '<div class="empty">Your cart is empty.<br>購物車是空的！</div>';
+    } else {
+      Object.entries(categories).forEach(([catId, cat]) => {
+        const entries = cart.filter(entry =>
+          cat.items.some(item => item.id === entry.id)
+        );
+
+        if (!entries.length) return;
+
+        const group = document.createElement("section");
+        group.className = "cart-group";
+
+        const heading = document.createElement("h3");
+        heading.textContent = `${cat.emoji} ${cat.label}`;
+        group.appendChild(heading);
+
+        entries.forEach(entry => {
+          const item = getItem(entry.id);
+          const line = document.createElement("div");
+          line.className = "cart-item";
+
+          const name = document.createElement("span");
+          name.textContent =
+            `${item.emoji} ${item.en}（${item.zh}） — ${money(item.price)}`;
+
+          const remove = document.createElement("button");
+          remove.className = "remove";
+          remove.type = "button";
+          remove.textContent = "Remove 移除";
+          remove.setAttribute("aria-label", `Remove ${item.en}`);
+          remove.addEventListener("click", () => removeFromCart(entry.key));
+
+          line.append(name, remove);
+          group.appendChild(line);
+        });
+
+        cartList.appendChild(group);
+      });
+    }
+
+    cartCount.textContent =
+      `${cart.length} item${cart.length === 1 ? "" : "s"}（${cart.length} 件）`;
+    totalDisplay.textContent = money(totalCost());
+  }
+
+  function checkout() {
+    const has = catId => cart.some(entry =>
+      categories[catId].items.some(item => item.id === entry.id)
+    );
+
+    const checklist = [
+      ["Grain（全穀雜糧）", has("grains")],
+      ["Fruit（水果）", has("fruits")],
+      ["Vegetable（蔬菜）", has("vegetables")],
+      ["Protein（豆魚蛋肉）", has("protein")],
+      ["Dairy（乳品）", has("dairy")],
+      ["Oils, Nuts & Seeds（油脂與堅果種子）", has("nuts")]
+    ];
+
+    const balanced = checklist.every(item => item[1]);
+    const boughtTreats = has("treats");
+
+    let html =
+      "<strong>My Food Check 我的食物清單</strong><ul class='checklist'>";
+
+    checklist.forEach(([label, ok]) => {
+      html += `<li>${ok ? "✅" : "⬜"} ${label}: ${
+        ok ? "Yes! 有！" : "Not yet. 還沒喔。"
+      }</li>`;
+    });
+
+    html += "</ul>";
+
+    if (balanced) {
+      html += "<div>🎉 Great job! Very healthy!<br>好棒！非常健康！</div>";
+    } else {
+      html += "<div>Try to get all 6 food groups!<br>試著買齊六大類食物！</div>";
+    }
+
+    if (boughtTreats) {
+      html += "<div style='margin-top:8px'>🍬 Eat less candy and soda!<br>少吃糖果和汽水喔！</div>";
+    }
+
+    feedback.innerHTML = html;
+  }
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      activeCategory = tab.dataset.cat;
+
+      document.querySelectorAll(".tab").forEach(other => {
+        other.setAttribute("aria-selected", String(other === tab));
+      });
+
+      renderProducts();
+    });
+  });
+
+  document.getElementById("checkoutButton").addEventListener("click", checkout);
+
+  document.getElementById("resetButton").addEventListener("click", () => {
+    cart = [];
+    moneyLeft = START_MONEY;
+    feedback.textContent = "";
+    renderMoney();
+    renderCart();
+  });
+
+  // Original playful music made with Web Audio.
+  // A user click starts it, so browser autoplay rules are respected.
+
+  function playNote(freq, startTime, duration, volume = 0.045) {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.03);
+  }
+
+  function musicLoop() {
+    if (!musicOn || !audioContext) return;
+
+    const melody = [
+      523.25,659.25,783.99,659.25,
+      587.33,698.46,880,698.46,
+      523.25,587.33,659.25,523.25,
+      392,493.88,587.33,493.88
+    ];
+
+    const now = audioContext.currentTime;
+
+    for (let i = 0; i < melody.length; i++) {
+      const t = now + i * 0.22;
+
+      playNote(
+        melody[(noteIndex + i) % melody.length],
+        t, 0.18, 0.035
+      );
+
+      if (i % 4 === 0) {
+        playNote(
+          melody[(noteIndex + i) % melody.length] / 2,
+          t, 0.3, 0.018
+        );
+      }
+    }
+
+    noteIndex = (noteIndex + melody.length) % melody.length;
+    musicTimer = setTimeout(musicLoop, melody.length * 220);
+  }
+
+  musicButton.addEventListener("click", async () => {
+    if (!musicOn) {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        alert("Sorry, music is not supported in this browser.（抱歉，這個瀏覽器不支援音樂。）");
+        return;
+      }
+
+      audioContext = audioContext || new AudioContextClass();
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      musicOn = true;
+      musicButton.textContent = "🔇 Mute（靜音）";
+      musicLoop();
+    } else {
+      musicOn = false;
+      clearTimeout(musicTimer);
+
+      if (audioContext) audioContext.suspend();
+
+      musicButton.textContent = "🎵 Play Music（播放音樂）";
+    }
+  });
+
+  renderProducts();
+  renderCart();
+  renderMoney();
+})();
+</script>
+</body>
+</html>
